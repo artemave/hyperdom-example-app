@@ -1,0 +1,17 @@
+{
+  "presets": [
+    "hyperdom"
+  ],
+  "env": {
+    "production": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "useBuiltIns": "entry"
+          }
+        ]
+      ]
+    }
+  }
+}
