@@ -1,5 +1,5 @@
-require("@babel/polyfill")
-const hyperdom = require('hyperdom')
-const App = require('./app')
+import "@babel/polyfill";
+import * as hyperdom from "hyperdom";
+import App from "./app";
 
-hyperdom.append(document.body, new App())
+hyperdom.append(document.body, new App());
