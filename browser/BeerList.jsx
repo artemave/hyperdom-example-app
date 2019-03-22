@@ -1,10 +1,10 @@
 import * as hyperdom from "hyperdom"
 import styles from "./styles.css"
+import routes from "./routes"
 
 export default class BeerList {
 
-  async getBeers() {
-    delete this.beers
+  async onload() {
     this.isLoadingBeer = true
 
     const response = await fetch("https://api.punkapi.com/v2/beers")
@@ -13,47 +13,57 @@ export default class BeerList {
     this.isLoadingBeer = false
   }
 
-  renderTable() {
-    if (this.beers) {
-      return (
-        <div>
-          <table class={styles.beerList}>
-            <thead>
-              <tr>
-                <th />
-                <th>Name</th>
-                <th>Tagline</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.beers.map(({name, tagline, image_url}) => {
-                return (
-                  <tr>
-                    <td>
-                      <img height="50" src={image_url} />
-                    </td>
-                    <td>{name}</td>
-                    <td>{tagline}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      )
-    }
+  routes() {
+    return [
+      routes.beers({
+        render: () => {
+          return <div>{this.isLoadingBeer ? 'Loading...' : this.renderTable()}</div>
+        }
+      }),
+      routes.beer({
+        bindings: {
+          id: [this, 'beerId']
+        },
+        render: () => {
+          return <div>{this.isLoadingBeer ? 'Loading...' : this.renderCurrentBeer()}</div>
+        }
+      })
+    ]
   }
 
-  render() {
-    if (this.isLoadingBeer) {
-      return <div>Loading...</div>
-    } else {
-      return (
-        <div>
-          <button onclick={() => this.getBeers()} disabled={this.isLoadingBeer}>Have a beer</button>
-          {this.renderTable()}
-        </div>
-      )
-    }
+  renderCurrentBeer() {
+    const beer = this.beers.find(beer => beer.id == this.beerId)
+    return <img src={beer.image_url}/>
+  }
+
+  renderTable() {
+    return (
+      <div>
+        <table class={styles.beerList}>
+          <thead>
+            <tr>
+              <th />
+              <th>Name</th>
+              <th>Tagline</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {this.beers.map(({id, name, tagline, image_url}) => {
+              return (
+                <tr>
+                  <td>
+                    <img height="50" src={image_url} />
+                  </td>
+                  <td>{name}</td>
+                  <td>{tagline}</td>
+                  <td><a href={routes.beer.href({id})}>show</a></td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
   }
 }
